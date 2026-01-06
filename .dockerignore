@@ -1,34 +1,19 @@
-# Git
-.git
-.gitignore
-.gitattributes
-
-# Documentation
-*.md
-README.md
-DEPLOYMENT.md
-
-# IDE
-.vscode
-.idea
-*.swp
-*.swo
-*~
-
-# OS
-.DS_Store
-Thumbs.db
-
-# Logs
-*.log
-logs
-
-# Environment
+__pycache__
+*.pyc
+*.pyo
+*.pyd
+.Python
+*.so
+*.egg
+*.egg-info
+dist
+build
+.venv
+venv
+env
 .env
-.env.local
-.env.*.local
-
-# Compliance docs (not needed in containers)
-compliance/
+.pytest_cache
+.coverage
+htmlcov
 
 
