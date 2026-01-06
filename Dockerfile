@@ -1,23 +1,32 @@
-FROM python:3.11-slim
+# Build stage
+FROM node:20-alpine AS builder
 
 WORKDIR /app
 
-# Copy requirements and install dependencies
-COPY requirements.txt .
-RUN pip install --no-cache-dir -r requirements.txt
+# Copy package files
+COPY package.json package-lock.json* ./
 
-# Create backend package structure and copy app
-COPY app backend/app
+# Install dependencies
+RUN if [ -f package-lock.json ]; then npm ci; else npm install; fi
 
-# Create __init__.py files for package structure
-RUN touch backend/__init__.py backend/app/__init__.py backend/app/routers/__init__.py backend/app/services/__init__.py
+# Copy source code
+COPY . .
 
-# Set PYTHONPATH
-ENV PYTHONPATH=/app
+# Build the application
+RUN npm run build
+
+# Production stage
+FROM nginx:alpine
+
+# Copy built assets from builder
+COPY --from=builder /app/dist /usr/share/nginx/html
+
+# Copy nginx configuration
+COPY nginx.conf /etc/nginx/conf.d/default.conf
 
 # Expose port
-EXPOSE 8000
+EXPOSE 80
 
-# Run the application
-CMD ["uvicorn", "backend.app.main:app", "--host", "0.0.0.0", "--port", "8000"]
+# Start nginx
+CMD ["nginx", "-g", "daemon off;"]
 
